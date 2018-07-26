@@ -1,34 +1,29 @@
 
-.epic-row.e2e-epic-row(
-    ng-class="{'is-blocked':  vm.epic.get('is_blocked'), 'is-closed': vm.epic.get('is_closed'), 'unfold': vm.displayChildEpics, 'not-empty': vm.epic.get('child_epics_counts')}"
-    ng-click="vm.toggleChildEpicList()"
+.child-epic-row(
+    ng-class="{'is-blocked':  vm.child.get('is_blocked'), 'is-closed': vm.child.get('is_closed'), 'unfold': vm.displayUserStories, 'not-empty': vm.child.getIn(['user_stories_counts', 'opened']) || vm.child.getIn(['user_stories_counts', 'closed'])}"
+    ng-click="vm.toggleUserStoryList()"
 )
-    tg-svg.icon-drag(
-        svg-icon="icon-drag"
-        ng-if="vm.canEditEpics()"
-    )
-
     .vote(
         ng-if="vm.column.votes"
-        ng-class="{'is-voter': vm.epic.get('is_voter')}"
+        ng-class="{'is-voter': vm.child.get('is_voter')}"
     )
         tg-svg(svg-icon='icon-upvote')
-        span {{::vm.epic.get('total_voters')}}
+        span {{::vm.child.get('total_voters')}}
 
     .name(ng-if="vm.column.name")
         - var hash = "#";
         a(
-            tg-nav="project-epics-detail:project=vm.project.slug,ref=vm.epic.get('ref')"
-            ng-attr-title="{{::vm.epic.get('subject')}}"
-            ng-bind-html="'#'+vm.epic.get('ref')+' '+vm.epic.get('subject') | emojify"
+            tg-nav="project-epics-detail:project=vm.project.slug,ref=vm.child.get('ref')"
+            ng-attr-title="{{::vm.child.get('subject')}}"
+            ng-bind-html="'#'+vm.child.get('ref')+' '+vm.child.get('subject') | emojify"
         )
         span.epic-pill(
-            ng-style="::{'background-color': vm.epic.get('color')}"
+            ng-style="::{'background-color': vm.child.get('color')}"
             translate="EPICS.EPIC"
         )
         tg-svg(
             svg-icon="icon-arrow-down"
-            ng-if="vm.epic.get('child_epics_counts')"
+            ng-if="vm.child.get('user_stories_counts')"
         )
 
     .project(ng-if="vm.column.project")
@@ -40,7 +35,7 @@
         tg-loading="vm.assignLoader"
     )
         tg-assigned-to-component(
-            assigned-to="vm.epic.get('assigned_to_extra_info')"
+            assigned-to="vm.child.get('assigned_to_extra_info')"
             project="vm.project"
             on-remove-assigned="vm.updateAssignedTo()"
             on-assign-to="vm.updateAssignedTo(member)"
@@ -50,7 +45,7 @@
     .status(
         ng-if="vm.column.status && !vm.canEditEpics()"
     )
-        span {{vm.epic.getIn(['status_extra_info', 'name'])}}
+        span {{vm.child.getIn(['status_extra_info', 'name'])}}
     .status(
         ng-if="vm.column.status && vm.canEditEpics()"
         ng-mouseleave="vm.displayStatusList = false"
@@ -58,10 +53,10 @@
     )
         button(
             ng-click="vm.displayStatusList = true"
-            ng-style="{'color': vm.epic.getIn(['status_extra_info', 'color'])}"
+            ng-style="{'color': vm.child.getIn(['status_extra_info', 'color'])}"
             tg-loading="vm.loadingStatus"
         )
-            span.e2e-epic-status {{vm.epic.getIn(['status_extra_info', 'name'])}}
+            span.e2e-epic-status {{vm.child.getIn(['status_extra_info', 'name'])}}
             tg-svg(
                 svg-icon="icon-arrow-down"
             )
@@ -79,9 +74,9 @@
             ng-style="{'width':vm.percentage}"
         )
 
-.epic-child-epic-wrapper(ng-if="vm.displayChildEpics && vm.ChildEpics")
-    .epic-child-epic(tg-repeat="child in vm.ChildEpics track by child.get('id')")
-        tg-child-epic-row.e2e-child-epic(
-            child="child"
+.epic-stories-wrapper(ng-if="vm.displayUserStories && vm.epicStories")
+    .epic-story(tg-repeat="story in vm.epicStories track by story.get('id')")
+        tg-story-row.e2e-story(
+            story="story"
             column="vm.column"
         )

@@ -42,7 +42,7 @@ class EpicsService
         @._loadingEpics = true
         @._disablePagination = true
 
-        return @resources.epics.list(@projectService.project.get('id'), @._page)
+        return @resources.epics.list(@projectService.project.get('id'), 'null', @._page)
             .then (result) =>
                 if reset
                     @.clear()
@@ -63,6 +63,9 @@ class EpicsService
 
     listRelatedUserStories: (epic) ->
         return @resources.userstories.listInEpic(epic.get('id'))
+
+    listChildEpics: (epic) ->
+        return @resources.epics.list(@projectService.project.get('id'), epic.get('id'), null)
 
     createEpic: (epicData, attachments) ->
         epicData.project = @projectService.project.get('id')

@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-# File: epics-table.controller.coffee
+# File: child-epics-table.controller.coffee
 ###
 
-class EpicRowController
+class ChildEpicRowController
     @.$inject = [
         "$tgConfirm",
         "tgProjectService",
@@ -25,7 +25,7 @@ class EpicRowController
     ]
 
     constructor: (@confirm, @projectService, @epicsService) ->
-        @.displayChildEpics = false
+        @.displayUserStories = false
         @.displayAssignedTo = false
         @.displayStatusList = false
         @.loadingStatus = false
@@ -37,11 +37,11 @@ class EpicRowController
         @._calculateProgressBar()
 
     _calculateProgressBar: () ->
-        if @.epic.getIn(['status_extra_info', 'is_closed']) == true
+        if @.child.getIn(['status_extra_info', 'is_closed']) == true
             @.percentage = "100%"
         else
-            progress = @.epic.getIn(['user_stories_counts', 'progress'])
-            total = @.epic.getIn(['user_stories_counts', 'total'])
+            progress = @.child.getIn(['user_stories_counts', 'progress'])
+            total = @.child.getIn(['user_stories_counts', 'total'])
             if total == 0
                 @.percentage = "0%"
             else
@@ -50,21 +50,21 @@ class EpicRowController
     canEditEpics: () ->
         return @projectService.hasPermission("modify_epic")
 
-    toggleChildEpicList: () ->
-        if !@.displayChildEpics
-            @epicsService.listChildEpics(@.epic)
-                .then (result) =>
-                    @.ChildEpics = result.list
-                    @.displayChildEpics = true
+    toggleUserStoryList: () ->
+        if !@.displayUserStories
+            @epicsService.listRelatedUserStories(@.child)
+                .then (userStories) =>
+                    @.epicStories = userStories
+                    @.displayUserStories = true
                 .catch =>
                     @confirm.notify('error')
         else
-            @.displayChildEpics = false
+            @.displayUserStories = false
 
     updateStatus: (statusId) ->
         @.displayStatusList = false
         @.loadingStatus = true
-        return @epicsService.updateEpicStatus(@.epic, statusId)
+        return @epicsService.updateEpicStatus(@.child, statusId)
             .catch () =>
                 @confirm.notify('error')
             .finally () =>
@@ -72,10 +72,10 @@ class EpicRowController
 
     updateAssignedTo: (member) ->
         @.assignLoader = true
-        return @epicsService.updateEpicAssignedTo(@.epic, member?.id or null)
+        return @epicsService.updateEpicAssignedTo(@.child, member?.id or null)
             .catch () =>
                 @confirm.notify('error')
             .then () =>
                 @.assignLoader = false
 
-angular.module("taigaEpics").controller("EpicRowCtrl", EpicRowController)
+angular.module("taigaEpics").controller("ChildEpicRowCtrl", ChildEpicRowController)

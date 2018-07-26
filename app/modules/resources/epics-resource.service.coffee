@@ -33,10 +33,10 @@ Resource = (urlsService, http) ->
             .then (result) ->
                 return Immutable.fromJS(result.data)
 
-    service.list = (projectId, page=0) ->
+    service.list = (projectId, parentId, page) ->
         url = urlsService.resolve("epics")
 
-        params = {project: projectId, page: page}
+        params = {project: projectId, parent_epic: parentId, page: page}
 
         return http.get(url, params)
             .then (result) ->

@@ -23,7 +23,7 @@
         )
         tg-svg(
             svg-icon="icon-arrow-down"
-            ng-if="vm.child.get('user_stories_counts')"
+            ng-if="vm.child.getIn(['user_stories_counts', 'total'])"
         )
 
     .project(ng-if="vm.column.project")

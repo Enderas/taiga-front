@@ -40,12 +40,10 @@ class EpicRowController
         if @.epic.getIn(['status_extra_info', 'is_closed']) == true
             @.percentage = "100%"
         else
-            progress = @.epic.getIn(['user_stories_counts', 'progress'])
-            total = @.epic.getIn(['user_stories_counts', 'total'])
-            if total == 0
+            if @.epic.get('child_epics_counts') == 0
                 @.percentage = "0%"
             else
-                @.percentage = "#{progress * 100 / total}%"
+                @.percentage = "#{@.epic.get('epic_progress')*100}%"
 
     canEditEpics: () ->
         return @projectService.hasPermission("modify_epic")
